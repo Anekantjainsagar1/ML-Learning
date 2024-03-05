@@ -33,7 +33,7 @@ def getUsers():
     if file.filename == '':
         return 'No selected file'
     
-    file.save("D:\Learning\ml\Projects\Whatsapp Analysis\data" + file.filename)
+    file.save(".\data" + file.filename)
     filename = "data" + file.filename
     
     f = open(filename, 'r', encoding='utf-8')
