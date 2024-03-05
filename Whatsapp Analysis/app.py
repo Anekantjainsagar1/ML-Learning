@@ -33,8 +33,9 @@ def getUsers():
     if file.filename == '':
         return 'No selected file'
     
-    file.save(".\data" + file.filename)
+    file.save("/opt/render/project/src/Whatsapp Analysis/data" + file.filename)
     filename = "data" + file.filename
+    print(filename)
     
     f = open(filename, 'r', encoding='utf-8')
     df = f.read()
