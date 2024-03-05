@@ -51,7 +51,7 @@ const App = () => {
             const formData = new FormData();
             formData.set("file", e.target.files[0]);
 
-            fetch("http://localhost:5000/get-users", {
+            fetch("https://ml-learning-drfk.onrender.com/get-users", {
               method: "POST",
               body: formData,
             })
@@ -101,7 +101,7 @@ const App = () => {
               const formData = new FormData();
               formData.set("file", file);
 
-              fetch(`http://localhost:5000/post?name=${user}`, {
+              fetch(`https://ml-learning-drfk.onrender.com/post?name=${user}`, {
                 method: "POST",
                 body: formData,
               })
