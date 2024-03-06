@@ -175,6 +175,3 @@ def index():
             'daily_timeline_value': daily_timeline['messages'].values.tolist()
         }
     )
-
-if __name__ == '__main__':
-    app.run(debug=True)
