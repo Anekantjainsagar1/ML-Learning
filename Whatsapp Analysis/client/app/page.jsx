@@ -20,7 +20,10 @@ const App = () => {
   let url = "https://ml-learning-drfk.onrender.com";
 
   useEffect(() => {
-    if (response?.top_5_users) {
+    if (
+      response?.top_5_users &&
+      Object.keys(response?.top_5_users).length > 1
+    ) {
       const dataArray = Object.entries(response?.top_5_users);
       dataArray.sort((a, b) => b[1] - a[1]);
       const sortedObject = Object.fromEntries(dataArray);
@@ -133,125 +136,142 @@ const App = () => {
         </button>
       </div>
       <div className="md:w-9/12 h-full py-6 md:px-0 px-4 pb-10 md:ml-[3vw] w-full overflow-y-auto">
-        {response?.total_words && (
-          <div>
-            <h1 className="text-xl flex items-center">
-              Chat Analysis of <p className="font-semibold ml-1.5">{user}</p>
-            </h1>
-            <div className="grid grid-cols-2 md:grid-cols-4 items-center md:gap-y-0 gap-y-5 gap-x-5 px-2 md:px-5 mt-3">
-              {[
-                { title: "Total Messages", value: response?.messages },
-                { title: "Total Words Count", value: response?.total_words },
-                { title: "Total Media Shared", value: response?.media_count },
-              ].map((e, i) => {
-                return (
-                  <div
-                    key={i}
-                    className="w-full h-full border rounded-md flex items-center cursor-pointer flex-col justify-center py-4 md:px-0 px-4 text-center md:py-3"
-                  >
-                    {e?.title} :-{" "}
-                    <p className="font-semibold text-lg">{e?.value}</p>
-                  </div>
-                );
-              })}
-              <div
-                onClick={(e) => {
-                  setIsOpen(!modalIsOpen);
-                }}
-                className="w-full h-full border rounded-md flex items-center cursor-pointer flex-col justify-center py-4 md:px-0 px-4 text-center md:py-3"
-              >
-                Total Links Shared :-{" "}
-                <p className="font-semibold text-lg flex items-center">
-                  {response?.total_links?.length}{" "}
-                  <CiLink className="ml-2 text-2xl" />
-                </p>
-              </div>
-            </div>
-            <h1 className="text-xl font-semibold mt-10 mb-2">
-              Monthly Analysis
-            </h1>
-            <div className="px-2 md:px-5 w-full">
-              <MonthlyTimeline
-                data={response?.monthly_timeline_value}
-                labels={response?.monthly_timeline_time}
-              />
-            </div>
-            <h1 className="text-xl font-semibold mt-10 mb-2">Daily Analysis</h1>
-            <div className="px-2 md:px-5 w-full">
-              <DailyTimeline
-                data={response?.daily_timeline_value}
-                labels={response?.daily_timeline_time}
-              />
-            </div>
-            <h1 className="text-xl font-semibold mt-10 mb-2">
-              Most Busy Users
-            </h1>
-            <div className="px-5">
-              <MostBusyUser
-                data={Object.values(response?.top_5_users)}
-                labels={Object.keys(response?.top_5_users)}
-              />
-            </div>
-            <h1 className="text-xl font-semibold mt-10 mb-2">
-              Most Common Words Used
-            </h1>
-            <div className="px-5 flex items-start md:flex-row flex-col justify-between">
-              <div className="w-full md:block hidden md:w-10/12">
-                <MostUsedWords
-                  data={Object.values(response?.top_msg_df["1"]).slice(0, 20)}
-                  labels={Object.values(response?.top_msg_df["0"]).slice(0, 20)}
-                />
-              </div>
-              <div className="w-full md:hidden block md:w-10/12">
-                <MostUsedWords
-                  data={Object.values(response?.top_msg_df["1"]).slice(0, 5)}
-                  labels={Object.values(response?.top_msg_df["0"]).slice(0, 5)}
-                />
-              </div>
-              <div className="md:w-2/12 border py-2 px-4 md:ml-5 overflow-y-auto rounded-md md:mt-0 mt-3 h-[20vh] w-full md:h-[60vh]">
-                {Object.values(response?.top_msg_df["0"]).map((e, i) => {
+        {response?.total_words &&
+          Object.values(response?.top_msg_df["0"]).length > 0 &&
+          Object.values(response?.top_emojis["0"]).length > 0 &&
+          Object.keys(response?.top_5_users)?.length > 0 && (
+            <div>
+              <h1 className="text-xl flex items-center">
+                Chat Analysis of <p className="font-semibold ml-1.5">{user}</p>
+              </h1>
+              <div className="grid grid-cols-2 md:grid-cols-4 items-center md:gap-y-0 gap-y-5 gap-x-5 px-2 md:px-5 mt-3">
+                {[
+                  { title: "Total Messages", value: response?.messages },
+                  { title: "Total Words Count", value: response?.total_words },
+                  { title: "Total Media Shared", value: response?.media_count },
+                ].map((e, i) => {
                   return (
-                    <p
+                    <div
                       key={i}
-                      className="py-1 transition-all md:text-base text-sm px-3 rounded-md cursor-pointer hover:bg-gray-600"
+                      className="w-full h-full border rounded-md flex items-center cursor-pointer flex-col justify-center py-4 md:px-0 px-4 text-center md:py-3"
                     >
-                      {i + 1}. {e} ({response?.top_msg_df["1"][i]})
-                    </p>
+                      {e?.title} :-{" "}
+                      <p className="font-semibold text-lg">{e?.value}</p>
+                    </div>
                   );
                 })}
+                <div
+                  onClick={(e) => {
+                    setIsOpen(!modalIsOpen);
+                  }}
+                  className="w-full h-full border rounded-md flex items-center cursor-pointer flex-col justify-center py-4 md:px-0 px-4 text-center md:py-3"
+                >
+                  Total Links Shared :-{" "}
+                  <p className="font-semibold text-lg flex items-center">
+                    {response?.total_links?.length}{" "}
+                    <CiLink className="ml-2 text-2xl" />
+                  </p>
+                </div>
               </div>
-            </div>
-            <h1 className="text-xl font-semibold mt-10 mb-2">
-              Top Emojis Used
-            </h1>
-            <div className="px-5 flex items-start md:flex-row flex-col justify-between">
-              <div className="w-full md:block hidden md:w-8/12">
-                <TopEmojis
-                  data={Object.values(response?.top_emojis["1"]).slice(0, 10)}
-                  labels={Object.values(response?.top_emojis["0"]).slice(0, 10)}
+              <h1 className="text-xl font-semibold mt-10 mb-2">
+                Monthly Analysis
+              </h1>
+              <div className="px-2 md:px-5 w-full">
+                <MonthlyTimeline
+                  data={response?.monthly_timeline_value}
+                  labels={response?.monthly_timeline_time}
                 />
               </div>
-              <div className="w-full md:hidden block md:w-8/12">
-                <TopEmojis
-                  data={Object.values(response?.top_emojis["1"]).slice(0, 5)}
-                  labels={Object.values(response?.top_emojis["0"]).slice(0, 5)}
+              <h1 className="text-xl font-semibold mt-10 mb-2">
+                Daily Analysis
+              </h1>
+              <div className="px-2 md:px-5 w-full">
+                <DailyTimeline
+                  data={response?.daily_timeline_value}
+                  labels={response?.daily_timeline_time}
                 />
               </div>
-              <div className="w-full md:w-3/12 md:mt-0 mt-3 border py-2 px-4 overflow-y-auto rounded-md h-[20vh] md:h-[90vh]">
-                {Object.values(response?.top_emojis["0"]).map((e, i) => {
-                  return (
-                    <p
-                      key={i}
-                      className="py-1 md:text-base text-sm transition-all px-3 rounded-md cursor-pointer hover:bg-gray-600"
-                    >
-                      {i + 1}. {e} ({response?.top_emojis["1"][i]})
-                    </p>
-                  );
-                })}
+              <h1 className="text-xl font-semibold mt-10 mb-2">
+                Most Busy Users
+              </h1>
+              <div className="px-5">
+                <MostBusyUser
+                  data={Object.values(response?.top_5_users)}
+                  labels={Object.keys(response?.top_5_users)}
+                />
+              </div>
+              <h1 className="text-xl font-semibold mt-10 mb-2">
+                Most Common Words Used
+              </h1>
+              <div className="px-5 flex items-start md:flex-row flex-col justify-between">
+                <div className="w-full md:block hidden md:w-10/12">
+                  <MostUsedWords
+                    data={Object.values(response?.top_msg_df["1"]).slice(0, 20)}
+                    labels={Object.values(response?.top_msg_df["0"]).slice(
+                      0,
+                      20
+                    )}
+                  />
+                </div>
+                <div className="w-full md:hidden block md:w-10/12">
+                  <MostUsedWords
+                    data={Object.values(response?.top_msg_df["1"]).slice(0, 5)}
+                    labels={Object.values(response?.top_msg_df["0"]).slice(
+                      0,
+                      5
+                    )}
+                  />
+                </div>
+                <div className="md:w-2/12 border py-2 px-4 md:ml-5 overflow-y-auto rounded-md md:mt-0 mt-3 h-[20vh] w-full md:h-[60vh]">
+                  {Object.values(response?.top_msg_df["0"]).map((e, i) => {
+                    return (
+                      <p
+                        key={i}
+                        className="py-1 transition-all md:text-base text-sm px-3 rounded-md cursor-pointer hover:bg-gray-600"
+                      >
+                        {i + 1}. {e} ({response?.top_msg_df["1"][i]})
+                      </p>
+                    );
+                  })}
+                </div>
+              </div>
+              <h1 className="text-xl font-semibold mt-10 mb-2">
+                Top Emojis Used
+              </h1>
+              <div className="px-5 flex items-start md:flex-row flex-col justify-between">
+                <div className="w-full md:block hidden md:w-8/12">
+                  <TopEmojis
+                    data={Object.values(response?.top_emojis["1"]).slice(0, 10)}
+                    labels={Object.values(response?.top_emojis["0"]).slice(
+                      0,
+                      10
+                    )}
+                  />
+                </div>
+                <div className="w-full md:hidden block md:w-8/12">
+                  <TopEmojis
+                    data={Object.values(response?.top_emojis["1"]).slice(0, 5)}
+                    labels={Object.values(response?.top_emojis["0"]).slice(
+                      0,
+                      5
+                    )}
+                  />
+                </div>
+                <div className="w-full md:w-3/12 md:mt-0 mt-3 border py-2 px-4 overflow-y-auto rounded-md h-[20vh] md:h-[90vh]">
+                  {Object.values(response?.top_emojis["0"]).map((e, i) => {
+                    return (
+                      <p
+                        key={i}
+                        className="py-1 md:text-base text-sm transition-all px-3 rounded-md cursor-pointer hover:bg-gray-600"
+                      >
+                        {i + 1}. {e} ({response?.top_emojis["1"][i]})
+                      </p>
+                    );
+                  })}
+                </div>
               </div>
             </div>
-          </div>
-        )}
+          )}
       </div>
     </div>
   );
