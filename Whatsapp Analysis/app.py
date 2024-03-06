@@ -6,6 +6,7 @@ import nltk
 nltk.download('punkt')
 from urlextract import URLExtract
 from collections import Counter
+import os
 
 extractor = URLExtract()
 
@@ -21,6 +22,11 @@ def getUsers():
     
     if file.filename == '':
         return 'No selected file'
+    
+    
+    current_directory = os.getcwd()
+
+    print("The current working directory is:", current_directory)
     
     file.save("/opt/render/project/src/Whatsapp Analysis/data" + file.filename)
     filename = "data" + file.filename
