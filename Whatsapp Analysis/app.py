@@ -15,60 +15,36 @@ CORS(app)  # Enable CORS for all routes
 @app.route('/get-users',methods=['POST'])
 def getUsers():
     file = request.files['file']
-    
-    if 'file' not in request.files:
-        return 'No file part'
-    
-    if file.filename == '':
-        return 'No selected file'
-    
     content = file.read().decode('utf-8')
-    
     msgs = re.split('\d{2}/\d{2}/\d{2},\s\d{2}:\d{2}\s-\s', content)[1:]
-    dates = re.findall('\d{2}/\d{2}/\d{2},\s\d{2}:\d{2}\s-\s', content)
-    
-    # msgs = re.split('\d{2}\/\d{2}\/\d{2},\s\d{1,2}:\d{2}\s(?:am|pm)\s-\s', content)[1:]
-    # dates = re.findall('\d{2}\/\d{2}\/\d{2},\s\d{1,2}:\d{2}\s(?:am|pm)\s-\s', content)
-
-    df = pd.DataFrame({'messages': msgs, 'date': dates})
-    # df['date'] = pd.to_datetime(df['date'], format='%d/%m/%y, %I:%M %p - ')
-    df['date'] = pd.to_datetime(df['date'], format='%d/%m/%y, %H:%M - ')
-    messages = []
+    df = pd.DataFrame({'messages': msgs})
     users = []
-    
     
     def categories(str):
         pattern = '([\w\W]+?):\s'
         data = re.split(pattern, str)
-        if len(data)>1:
-            messages.append(data[2])
-            users.append(data[1])
+        if len(data) > 1:
+            if(data[1] not in users):
+                users.append(data[1])
         else:
-            users.append("Group Notification")
-            messages.append(data[0])
+            if("Group Notification" not in users):
+                users.append("Group Notification")
     df['messages'].apply(categories)
-    df['user'] = users
+    return jsonify({'users': users})
     
-    return jsonify({'users':df['user'].value_counts().to_dict()})
-    
-# Sample route
 @app.route('/post', methods=['POST'])
 def index():
     file = request.files['file']
     user = request.args.get('name')
     
-    if 'file' not in request.files:
-        return 'No file part'
-    
-    if file.filename == '':
-        return 'No selected file'
-    
     content = file.read().decode('utf-8')
     msgs = re.split('\d{2}/\d{2}/\d{2},\s\d{2}:\d{2}\s-\s', content)[1:]
     dates = re.findall('\d{2}/\d{2}/\d{2},\s\d{2}:\d{2}\s-\s', content)
+    
+    # msgs = re.split('\d{2}\/\d{2}\/\d{2},\s\d{1,2}:\d{2}\s(?:am|pm)\s-\s', content)[1:]
+    # df['date'] = pd.to_datetime(df['date'], format='%d/%m/%y, %I:%M %p - ')
 
     df = pd.DataFrame({'messages': msgs, 'date': dates})
-    # df['date'] = pd.to_datetime(df['date'], format='%d/%m/%y, %I:%M %p - ')
     df['date'] = pd.to_datetime(df['date'], format='%d/%m/%y, %H:%M - ')
     messages = []
     users = []
@@ -89,7 +65,6 @@ def index():
     if user != 'All Users':
         df = df[df['user'] == user]
     top_5_users = df['user'].value_counts().head(10).to_dict()
-    
     
     df['year'] = df['date'].dt.year
     df['month_name'] = df['date'].dt.month_name()
@@ -130,7 +105,6 @@ def index():
     
     emojis = []
     def is_emoji(character):
-        # Emojis typically fall within this Unicode range
         return 0x1F600 <= ord(character) <= 0x1F64F or \
             0x1F300 <= ord(character) <= 0x1F5FF or \
             0x1F680 <= ord(character) <= 0x1F6FF or \
@@ -175,3 +149,6 @@ def index():
             'daily_timeline_value': daily_timeline['messages'].values.tolist()
         }
     )
+    
+if __name__ == '__main__':
+    app.run(debug=True)

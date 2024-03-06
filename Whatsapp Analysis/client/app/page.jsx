@@ -16,8 +16,8 @@ const App = () => {
   const [user, setUser] = useState("All Users");
   const [allUsers, setAllUsers] = useState([]);
   const [modalIsOpen, setIsOpen] = useState(false);
-  // let url = "http://localhost:5000";
-  let url = "https://ml-learning-drfk.onrender.com";
+  let url = "http://localhost:5000";
+  // let url = "https://ml-learning-drfk.onrender.com";
 
   useEffect(() => {
     if (
@@ -79,7 +79,7 @@ const App = () => {
           }}
           className="mb-4"
         />
-        {Object.keys(allUsers)?.length > 1 && (
+        {allUsers?.length > 1 && (
           <>
             <p>Analyse w.r.t.</p>
             <select
@@ -89,7 +89,7 @@ const App = () => {
               }}
               className="text-white bg-transparent w-full outline-none border px-3 mb-4 mt-1 py-1 rounded-md"
             >
-              {["All Users", ...Object.keys(allUsers)].map((e, i) => {
+              {["All Users", ...allUsers].map((e, i) => {
                 return (
                   <option key={i} value={e} className="bg-black text-white">
                     {e}
@@ -137,12 +137,13 @@ const App = () => {
       </div>
       <div className="md:w-9/12 h-full py-6 md:px-0 px-4 pb-10 md:ml-[3vw] w-full overflow-y-auto">
         {response?.total_words &&
-          Object.values(response?.top_msg_df["0"]).length > 0 &&
-          Object.values(response?.top_emojis["0"]).length > 0 &&
-          Object.keys(response?.top_5_users)?.length > 0 && (
+          response?.top_msg_df &&
+          response?.top_emojis &&
+          response?.top_5_users && (
             <div>
               <h1 className="text-xl flex items-center">
-                Chat Analysis of <p className="font-semibold ml-1.5">{user}</p>
+                Chat Analysis of{" "}
+                <span className="ml-1.5 font-semibold">{user}</span>
               </h1>
               <div className="grid grid-cols-2 md:grid-cols-4 items-center md:gap-y-0 gap-y-5 gap-x-5 px-2 md:px-5 mt-3">
                 {[
@@ -200,76 +201,97 @@ const App = () => {
                   labels={Object.keys(response?.top_5_users)}
                 />
               </div>
-              <h1 className="text-xl font-semibold mt-10 mb-2">
-                Most Common Words Used
-              </h1>
-              <div className="px-5 flex items-start md:flex-row flex-col justify-between">
-                <div className="w-full md:block hidden md:w-10/12">
-                  <MostUsedWords
-                    data={Object.values(response?.top_msg_df["1"]).slice(0, 20)}
-                    labels={Object.values(response?.top_msg_df["0"]).slice(
-                      0,
-                      20
-                    )}
-                  />
-                </div>
-                <div className="w-full md:hidden block md:w-10/12">
-                  <MostUsedWords
-                    data={Object.values(response?.top_msg_df["1"]).slice(0, 5)}
-                    labels={Object.values(response?.top_msg_df["0"]).slice(
-                      0,
-                      5
-                    )}
-                  />
-                </div>
-                <div className="md:w-2/12 border py-2 px-4 md:ml-5 overflow-y-auto rounded-md md:mt-0 mt-3 h-[20vh] w-full md:h-[60vh]">
-                  {Object.values(response?.top_msg_df["0"]).map((e, i) => {
-                    return (
-                      <p
-                        key={i}
-                        className="py-1 transition-all md:text-base text-sm px-3 rounded-md cursor-pointer hover:bg-gray-600"
-                      >
-                        {i + 1}. {e} ({response?.top_msg_df["1"][i]})
-                      </p>
-                    );
-                  })}
-                </div>
-              </div>
-              <h1 className="text-xl font-semibold mt-10 mb-2">
-                Top Emojis Used
-              </h1>
-              <div className="px-5 flex items-start md:flex-row flex-col justify-between">
-                <div className="w-full md:block hidden md:w-8/12">
-                  <TopEmojis
-                    data={Object.values(response?.top_emojis["1"]).slice(0, 10)}
-                    labels={Object.values(response?.top_emojis["0"]).slice(
-                      0,
-                      10
-                    )}
-                  />
-                </div>
-                <div className="w-full md:hidden block md:w-8/12">
-                  <TopEmojis
-                    data={Object.values(response?.top_emojis["1"]).slice(0, 5)}
-                    labels={Object.values(response?.top_emojis["0"]).slice(
-                      0,
-                      5
-                    )}
-                  />
-                </div>
-                <div className="w-full md:w-3/12 md:mt-0 mt-3 border py-2 px-4 overflow-y-auto rounded-md h-[20vh] md:h-[90vh]">
-                  {Object.values(response?.top_emojis["0"]).map((e, i) => {
-                    return (
-                      <p
-                        key={i}
-                        className="py-1 md:text-base text-sm transition-all px-3 rounded-md cursor-pointer hover:bg-gray-600"
-                      >
-                        {i + 1}. {e} ({response?.top_emojis["1"][i]})
-                      </p>
-                    );
-                  })}
-                </div>
-              </div>
+              {response?.top_msg_df["0"] && (
+                <>
+                  {" "}
+                  <h1 className="text-xl font-semibold mt-10 mb-2">
+                    Most Common Words Used
+                  </h1>
+                  <div className="px-5 flex items-start md:flex-row flex-col justify-between">
+                    <div className="w-full md:block hidden md:w-10/12">
+                      <MostUsedWords
+                        data={Object.values(response?.top_msg_df["1"]).slice(
+                          0,
+                          20
+                        )}
+                        labels={Object.values(response?.top_msg_df["0"]).slice(
+                          0,
+                          20
+                        )}
+                      />
+                    </div>
+                    <div className="w-full md:hidden block md:w-10/12">
+                      <MostUsedWords
+                        data={Object.values(response?.top_msg_df["1"]).slice(
+                          0,
+                          5
+                        )}
+                        labels={Object.values(response?.top_msg_df["0"]).slice(
+                          0,
+                          5
+                        )}
+                      />
+                    </div>
+                    <div className="md:w-2/12 border py-2 px-4 md:ml-5 overflow-y-auto rounded-md md:mt-0 mt-3 h-[20vh] w-full md:h-[60vh]">
+                      {Object.values(response?.top_msg_df["0"]).map((e, i) => {
+                        return (
+                          <p
+                            key={i}
+                            className="py-1 transition-all md:text-base text-sm px-3 rounded-md cursor-pointer hover:bg-gray-600"
+                          >
+                            {i + 1}. {e} ({response?.top_msg_df["1"][i]})
+                          </p>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </>
+              )}
+              {response?.top_emojis["0"] && (
+                <>
+                  <h1 className="text-xl font-semibold mt-10 mb-2">
+                    Top Emojis Used
+                  </h1>
+                  <div className="px-5 flex items-start md:flex-row flex-col justify-between">
+                    <div className="w-full md:block hidden md:w-8/12">
+                      <TopEmojis
+                        data={Object.values(response?.top_emojis["1"]).slice(
+                          0,
+                          10
+                        )}
+                        labels={Object.values(response?.top_emojis["0"]).slice(
+                          0,
+                          10
+                        )}
+                      />
+                    </div>
+                    <div className="w-full md:hidden block md:w-8/12">
+                      <TopEmojis
+                        data={Object.values(response?.top_emojis["1"]).slice(
+                          0,
+                          5
+                        )}
+                        labels={Object.values(response?.top_emojis["0"]).slice(
+                          0,
+                          5
+                        )}
+                      />
+                    </div>
+                    <div className="w-full md:w-3/12 md:mt-0 mt-3 border py-2 px-4 overflow-y-auto rounded-md h-[20vh] md:h-[90vh]">
+                      {Object.values(response?.top_emojis["0"]).map((e, i) => {
+                        return (
+                          <p
+                            key={i}
+                            className="py-1 md:text-base text-sm transition-all px-3 rounded-md cursor-pointer hover:bg-gray-600"
+                          >
+                            {i + 1}. {e} ({response?.top_emojis["1"][i]})
+                          </p>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
           )}
       </div>
