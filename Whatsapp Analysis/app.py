@@ -1,27 +1,16 @@
 import pandas as pd
 from flask import Flask, jsonify,request
 from flask_cors import CORS
-import matplotlib.pyplot as plt
-import seaborn as sns
 import re
 import nltk
 nltk.download('punkt')
 from urlextract import URLExtract
-from nltk.corpus import stopwords
-import string
 from collections import Counter
 
 extractor = URLExtract()
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
-
-def remove_stopwords(arr):
-    list = []
-    for i in arr:
-        if i not in stopwords.words('english') and i not in string.punctuation:
-            list.append(i)
-    return list
 
 @app.route('/get-users',methods=['POST'])
 def getUsers():
@@ -47,6 +36,8 @@ def getUsers():
     messages = []
     users = []
     
+    print(df.head())
+    
     def categories(str):
         pattern = '([\w\W]+?):\s'
         data = re.split(pattern, str)
@@ -61,7 +52,6 @@ def getUsers():
     
     return jsonify({'users':df['user'].value_counts().to_dict()})
     
-
 # Sample route
 @app.route('/post', methods=['POST'])
 def index():
@@ -74,7 +64,7 @@ def index():
     if file.filename == '':
         return 'No selected file'
     
-    file.save("D:\Learning\ml\Projects\Whatsapp Analysis\data" + file.filename)
+    file.save("/opt/render/project/src/Whatsapp Analysis/data" + file.filename)
     filename = "data" + file.filename
     
     f = open(filename, 'r', encoding='utf-8')
