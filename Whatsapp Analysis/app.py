@@ -25,12 +25,14 @@ def getUsers():
     
     
     current_directory = os.getcwd()
-
     print("The current working directory is:", current_directory)
     
     file.save("/opt/render/project/src/Whatsapp Analysis/data" + file.filename)
     filename = "data" + file.filename
     print(filename)
+    
+    print(os.listdir(current_directory))
+    print(os.listdir(current_directory+'/data'))
     
     f = open(filename, 'r', encoding='utf-8')
     df = f.read()
