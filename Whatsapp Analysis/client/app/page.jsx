@@ -16,6 +16,8 @@ const App = () => {
   const [user, setUser] = useState("All Users");
   const [allUsers, setAllUsers] = useState([]);
   const [modalIsOpen, setIsOpen] = useState(false);
+  // let url = "http://localhost:5000";
+  let url = "https://ml-learning-drfk.onrender.com";
 
   useEffect(() => {
     if (response?.top_5_users) {
@@ -51,7 +53,7 @@ const App = () => {
             const formData = new FormData();
             formData.set("file", e.target.files[0]);
 
-            fetch("https://ml-learning-drfk.onrender.com/get-users", {
+            fetch(`${url}/get-users`, {
               method: "POST",
               body: formData,
             })
@@ -101,7 +103,7 @@ const App = () => {
               const formData = new FormData();
               formData.set("file", file);
 
-              fetch(`https://ml-learning-drfk.onrender.com/post?name=${user}`, {
+              fetch(`${url}/post?name=${user}`, {
                 method: "POST",
                 body: formData,
               })

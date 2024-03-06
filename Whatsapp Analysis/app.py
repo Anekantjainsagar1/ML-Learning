@@ -23,16 +23,19 @@ def getUsers():
         return 'No selected file'
     
     content = file.read().decode('utf-8')
-    df = pd.read_csv(StringIO(content))
     
-    msgs = re.split('\d{2}\/\d{2}\/\d{2},\s\d{1,2}:\d{2}\s(?:am|pm)\s-\s', df)[1:]
-    dates = re.findall('\d{2}\/\d{2}\/\d{2},\s\d{1,2}:\d{2}\s(?:am|pm)\s-\s', df)
+    msgs = re.split('\d{2}/\d{2}/\d{2},\s\d{2}:\d{2}\s-\s', content)[1:]
+    dates = re.findall('\d{2}/\d{2}/\d{2},\s\d{2}:\d{2}\s-\s', content)
+    
+    # msgs = re.split('\d{2}\/\d{2}\/\d{2},\s\d{1,2}:\d{2}\s(?:am|pm)\s-\s', content)[1:]
+    # dates = re.findall('\d{2}\/\d{2}\/\d{2},\s\d{1,2}:\d{2}\s(?:am|pm)\s-\s', content)
+
     df = pd.DataFrame({'messages': msgs, 'date': dates})
-    df['date'] = pd.to_datetime(df['date'], format='%d/%m/%y, %I:%M %p - ')
+    # df['date'] = pd.to_datetime(df['date'], format='%d/%m/%y, %I:%M %p - ')
+    df['date'] = pd.to_datetime(df['date'], format='%d/%m/%y, %H:%M - ')
     messages = []
     users = []
     
-    print(df.head())
     
     def categories(str):
         pattern = '([\w\W]+?):\s'
@@ -61,12 +64,12 @@ def index():
         return 'No selected file'
     
     content = file.read().decode('utf-8')
-    df = pd.read_csv(StringIO(content))
-    
-    msgs = re.split('\d{2}\/\d{2}\/\d{2},\s\d{1,2}:\d{2}\s(?:am|pm)\s-\s', df)[1:]
-    dates = re.findall('\d{2}\/\d{2}\/\d{2},\s\d{1,2}:\d{2}\s(?:am|pm)\s-\s', df)
+    msgs = re.split('\d{2}/\d{2}/\d{2},\s\d{2}:\d{2}\s-\s', content)[1:]
+    dates = re.findall('\d{2}/\d{2}/\d{2},\s\d{2}:\d{2}\s-\s', content)
+
     df = pd.DataFrame({'messages': msgs, 'date': dates})
-    df['date'] = pd.to_datetime(df['date'], format='%d/%m/%y, %I:%M %p - ')
+    # df['date'] = pd.to_datetime(df['date'], format='%d/%m/%y, %I:%M %p - ')
+    df['date'] = pd.to_datetime(df['date'], format='%d/%m/%y, %H:%M - ')
     messages = []
     users = []
 
@@ -154,7 +157,6 @@ def index():
     for i in range(timeline.shape[0]):
         time.append(timeline['month_name'][i] + "-" + str(timeline['year'][i]))
     timeline['time'] = time
-    print(df.head(2))
     df['only_date'] = df['date'].dt.date
     daily_timeline = df.groupby('only_date').count()['messages'].reset_index()
             
@@ -173,3 +175,6 @@ def index():
             'daily_timeline_value': daily_timeline['messages'].values.tolist()
         }
     )
+
+if __name__ == '__main__':
+    app.run(debug=True)
