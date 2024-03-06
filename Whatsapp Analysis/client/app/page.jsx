@@ -16,8 +16,8 @@ const App = () => {
   const [user, setUser] = useState("All Users");
   const [allUsers, setAllUsers] = useState([]);
   const [modalIsOpen, setIsOpen] = useState(false);
-  // let url = "http://localhost:5000";
-  let url = "https://ml-learning-drfk.onrender.com";
+  let url = "http://localhost:5000";
+  // let url = "https://ml-learning-drfk.onrender.com";
 
   useEffect(() => {
     if (

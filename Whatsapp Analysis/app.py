@@ -12,11 +12,21 @@ extractor = URLExtract()
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
 
+ampm_pattern = "\d{2}\/\d{2}\/\d{2},\s\d{1,2}:\d{2}\s(?:am|pm)\s-\s"
+hour_pattern = "\d{2}/\d{2}/\d{2},\s\d{2}:\d{2}\s-\s"
+
 @app.route('/get-users',methods=['POST'])
 def getUsers():
     file = request.files['file']
     content = file.read().decode('utf-8')
-    msgs = re.split('\d{2}/\d{2}/\d{2},\s\d{2}:\d{2}\s-\s', content)[1:]
+    str = content[:100]
+    print ('am' in str)
+    
+    if ("am" in str): 
+        msgs = re.split(ampm_pattern, content)[1:]
+    else:
+        msgs = re.split(hour_pattern, content)[1:]
+        
     df = pd.DataFrame({'messages': msgs})
     users = []
     
@@ -38,14 +48,22 @@ def index():
     user = request.args.get('name')
     
     content = file.read().decode('utf-8')
-    msgs = re.split('\d{2}/\d{2}/\d{2},\s\d{2}:\d{2}\s-\s', content)[1:]
-    dates = re.findall('\d{2}/\d{2}/\d{2},\s\d{2}:\d{2}\s-\s', content)
+    str_content = content[:100]
+    print('am' in str_content)
     
-    # msgs = re.split('\d{2}\/\d{2}\/\d{2},\s\d{1,2}:\d{2}\s(?:am|pm)\s-\s', content)[1:]
-    # df['date'] = pd.to_datetime(df['date'], format='%d/%m/%y, %I:%M %p - ')
-
+    if ("am" in str_content): 
+        msgs = re.split(ampm_pattern, content)[1:]
+        dates = re.findall(ampm_pattern, content)
+    else:
+        msgs = re.split(hour_pattern, content)[1:]
+        dates = re.findall(hour_pattern, content)
+    
     df = pd.DataFrame({'messages': msgs, 'date': dates})
-    df['date'] = pd.to_datetime(df['date'], format='%d/%m/%y, %H:%M - ')
+    if('am' in str_content):
+        df['date'] = pd.to_datetime(df['date'], format='%d/%m/%y, %I:%M %p - ')
+    else:
+        df['date'] = pd.to_datetime(df['date'], format='%d/%m/%y, %H:%M - ')    
+    
     messages = []
     users = []
 
