@@ -6,8 +6,7 @@ import nltk
 nltk.download('punkt')
 from urlextract import URLExtract
 from collections import Counter
-import os
-
+from io import StringIO
 extractor = URLExtract()
 
 app = Flask(__name__)
@@ -23,19 +22,8 @@ def getUsers():
     if file.filename == '':
         return 'No selected file'
     
-    
-    current_directory = os.getcwd()
-    print("The current working directory is:", current_directory)
-    
-    file.save("/opt/render/project/src/Whatsapp Analysis/data" + file.filename)
-    filename = "data" + file.filename
-    print(filename)
-    
-    print(os.listdir(current_directory))
-    print(os.listdir(current_directory+'/data'))
-    
-    f = open(filename, 'r', encoding='utf-8')
-    df = f.read()
+    content = file.read().decode('utf-8')
+    df = pd.read_csv(StringIO(content))
     
     msgs = re.split('\d{2}\/\d{2}\/\d{2},\s\d{1,2}:\d{2}\s(?:am|pm)\s-\s', df)[1:]
     dates = re.findall('\d{2}\/\d{2}\/\d{2},\s\d{1,2}:\d{2}\s(?:am|pm)\s-\s', df)
@@ -72,11 +60,8 @@ def index():
     if file.filename == '':
         return 'No selected file'
     
-    file.save("/opt/render/project/src/Whatsapp Analysis/data" + file.filename)
-    filename = "data" + file.filename
-    
-    f = open(filename, 'r', encoding='utf-8')
-    df = f.read()
+    content = file.read().decode('utf-8')
+    df = pd.read_csv(StringIO(content))
     
     msgs = re.split('\d{2}\/\d{2}\/\d{2},\s\d{1,2}:\d{2}\s(?:am|pm)\s-\s', df)[1:]
     dates = re.findall('\d{2}\/\d{2}\/\d{2},\s\d{1,2}:\d{2}\s(?:am|pm)\s-\s', df)
